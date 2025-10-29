@@ -1043,9 +1043,6 @@ PyMODINIT_FUNC init_GPIO(void)
    Py_INCREF(&PWMType);
    PyModule_AddObject(module, "PWM", (PyObject*)&PWMType);
 
-   if (!PyEval_ThreadsInitialized())
-      PyEval_InitThreads();
-
    // register exit functions - last declared is called first
    if (Py_AtExit(cleanup) != 0)
    {
