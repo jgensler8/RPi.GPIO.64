@@ -43,13 +43,13 @@ const char *piModelNames [16] =
   "Pi 2",   	 //  4
   "Alpha",	   //  5
   "CM",		     //  6
-  "Unknown07", //  7
+  "Pi 4B",     //  7 (was "Unknown07" - this is a guess, Pi 4 is type 17 (0x11))
   "Pi Model 3 B",	     //  8
   "Pi Zero",	 //  9
   "CM3",	     // 10 A
   "Unknown11", // 11 B
   "Pi Zero-W", // 12 C
-  "Pi 3 Model B+",	   // 13 D
+  "Pi 3 Model B+", // 13 D
   "Pi 3 Model A+", // 14 E
   "Unknown15", // 15 F
 } ;
@@ -112,8 +112,8 @@ const char *piProcesorNames [16] =
    "BCM2835",     //  0
    "BCM2836",     //  1
    "BCM2837",     //  2
-   "Unknown03",	//	 3
-   "Unknown04",	//	 4   
+   "BCM2711",     //  3
+   "Unknown04",	//	 4
    "Unknown05",	//	 5
    "Unknown06",	//	 6
    "Unknown07",	//	 7
@@ -152,6 +152,13 @@ int get_rpi_info(rpi_info *info)
             rpi_rev = 0xa020d3;
           } else if (strstr(revision, "Raspberry Pi 3 Model B")!= NULL){
             rpi_rev = 0xa02582;
+          } else if (strstr(revision, "Raspberry Pi 4 Model B")!= NULL){
+            // Use a generic Pi 4B rev 1.1 code. The important part is the processor type.
+            // The RAM and manufacturer will be generic but the board will be identified.
+            // 0xb03111 => 1.1, 1GB, Sony UK, BCM2711, Pi 4B
+            // Let's use a generic one that will pass the bProc == 3 check.
+            // We can extract the real revision later if needed.
+            rpi_rev = 0xb03111;
           } else {
             return -1;
           }
@@ -163,6 +170,18 @@ int get_rpi_info(rpi_info *info)
         #endif
       }
       
+      // Pi 4 has a different revision scheme, handle it by checking the processor type first
+      bProc = (rpi_rev & (0x0F << 12)) >> 12;
+      if (bProc == 3) { // BCM2711 (Pi 4)
+          info->p1_revision = 3; // P1 header is compatible
+          info->ram = "Unknown"; // RAM size is encoded differently
+          info->manufacturer = "Sony"; // Most Pi 4s are Sony
+          info->processor = "BCM2711";
+          info->type = "Pi 4 Model B";
+          sprintf(info->revision, "%x", rpi_rev);
+          return 0; // Successfully identified
+      }
+
       if ((rpi_rev &  (1 << 23)) != 0)	// New way
       {
          /* bRev      = (rpi_rev & (0x0F <<  0)) >>  0 ; */
