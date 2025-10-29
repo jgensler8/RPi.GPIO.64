@@ -136,7 +136,7 @@ int get_rpi_info(rpi_info *info)
    #ifdef __aarch64__
       // 64bit processor -> new method
       uint32_t rpi_rev;
-      int bRev, bType, bProc, bMfg, bMem, bWarranty ;
+      int bType, bProc, bMfg, bMem;
   
       fp = fopen("/proc/device-tree/system/linux,revision", "r");
       if (!fp)
@@ -165,12 +165,11 @@ int get_rpi_info(rpi_info *info)
       
       if ((rpi_rev &  (1 << 23)) != 0)	// New way
       {
-         bRev      = (rpi_rev & (0x0F <<  0)) >>  0 ;
+         /* bRev      = (rpi_rev & (0x0F <<  0)) >>  0 ; */
          bType     = (rpi_rev & (0xFF <<  4)) >>  4 ;
          bProc     = (rpi_rev & (0x0F << 12)) >> 12 ;	
          bMfg      = (rpi_rev & (0x0F << 16)) >> 16 ;
          bMem      = (rpi_rev & (0x07 << 20)) >> 20 ;
-         bWarranty = (rpi_rev & (0x03 << 24)) != 0 ;  // Not used for now.
          
          sprintf(revision,"%x",rpi_rev);
          
