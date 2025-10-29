@@ -25,10 +25,10 @@ SOFTWARE.
 typedef struct
 {
    int p1_revision;
-   char *ram;
-   char *manufacturer;
-   char *processor;
-   char *type;
+   const char *ram;
+   const char *manufacturer;
+   const char *processor;
+   const char *type;
    char revision[1024];
 } rpi_info;
 #endif /* CPUINFO_H */

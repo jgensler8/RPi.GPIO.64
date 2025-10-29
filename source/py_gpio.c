@@ -1043,29 +1043,6 @@ PyMODINIT_FUNC init_GPIO(void)
    Py_INCREF(&PWMType);
    PyModule_AddObject(module, "PWM", (PyObject*)&PWMType);
 
-   // register exit functions - last declared is called first
-   if (Py_AtExit(cleanup) != 0)
-   {
-      setup_error = 1;
-      cleanup();
-#if PY_MAJOR_VERSION > 2
-      return NULL;
-#else
-      return;
-#endif
-   }
-
-   if (Py_AtExit(event_cleanup_all) != 0)
-   {
-      setup_error = 1;
-      cleanup();
-#if PY_MAJOR_VERSION > 2
-      return NULL;
-#else
-      return;
-#endif
-   }
-
 #if PY_MAJOR_VERSION > 2
    return module;
 #else
