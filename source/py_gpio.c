@@ -1026,7 +1026,7 @@ PyMODINIT_FUNC init_GPIO(void)
       pin_to_gpio = &pin_to_gpio_rev1;
    } else if (rpiinfo.p1_revision == 2) {
       pin_to_gpio = &pin_to_gpio_rev2;
-   } else { // assume model B+ or A+ or 2B
+   } else { // assume rpi_info.p1_revision == 3; 40-pin models B+, A+, 2B, 3B, 4B, Zero etc
       pin_to_gpio = &pin_to_gpio_rev3;
    }
 

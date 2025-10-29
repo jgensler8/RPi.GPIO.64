@@ -133,6 +133,22 @@ int get_rpi_info(rpi_info *info)
    FILE *fp;
    char revision[1024];
       
+   // Environment variable override for containerized environments
+   char *force_pi_version = getenv("GPIO_FORCE_PI_VERSION");
+   if (force_pi_version != NULL) {
+      if (strcmp(force_pi_version, "4") == 0) {
+         info->p1_revision = 3;
+         info->ram = "1GB+";
+         info->manufacturer = "Sony";
+         info->processor = "BCM2711";
+         info->type = "Pi 4 Model B";
+         strcpy(info->revision, "d03114"); // A generic Pi 4B revision
+         return 0; // Successfully identified via override
+      }
+      // Add other 'else if' blocks here for Pi 3, etc. if needed
+   }
+
+
    #ifdef __aarch64__
       // 64bit processor -> new method
       uint32_t rpi_rev;
